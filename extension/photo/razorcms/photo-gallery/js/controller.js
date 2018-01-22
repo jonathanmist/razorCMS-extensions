@@ -8,6 +8,7 @@ define(["angular", "cookie-monster", "ui-bootstrap", "razor/services/rars", "raz
         $scope.photoFrame = null;
         $scope.photoFrameHelper = null;
         $scope.position = 0;
+        $scope.showBox = true;
         $scope.sliderListStyle = {"width": "0px", "margin-left": "10px"};
         $scope.helperCanvasStyle = {"z-index": "-1px"};
 

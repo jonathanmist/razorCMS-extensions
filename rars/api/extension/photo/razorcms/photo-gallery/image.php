@@ -33,6 +33,11 @@ class ExtensionPhotoRazorcmsPhotogalleryImage extends RazorAPI
 		$this->root_path = RAZOR_BASE_PATH.'storage/files/extension/photo/razorcms/photo-gallery';
 		$this->root_url = str_replace("http://{$_SERVER["SERVER_NAME"]}".($_SERVER["SERVER_PORT"] == "80" ? "" : ":{$_SERVER["SERVER_PORT"]}"), "", RAZOR_BASE_URL).'storage/files/extension/photo/razorcms/photo-gallery';
 	}
+	
+	private function my_error_handler($errno, $errstr)
+	{
+		//Do nothing, this error is not important
+	}
 
 	public function get($album)
 	{
@@ -58,7 +63,23 @@ class ExtensionPhotoRazorcmsPhotogalleryImage extends RazorAPI
 				continue;
 			}
 
-			$files[$key] = array("url" => "{$this->root_url}/{$file}", "name" => $file);
+			$xf_data = 0;
+			set_error_handler(array($this, 'my_error_handler'));
+			$xf_data = @exif_read_data("{$this->root_path}/{$file}", "IFD0",0 );
+       			restore_error_handler();         
+			
+			$title = "";
+			if($xf_data != 0 and @array_key_exists('DocumentName', $xf_data))
+			{
+				$title = $xf_data["DocumentName"];
+			}
+			$description = "";
+			if($xf_data != 0 and @array_key_exists('ImageDescription', $xf_data))
+			{
+				$description = $xf_data["ImageDescription"];
+			}
+			
+			$files[$key] = array("url" => "{$this->root_url}/{$file}", "name" => $title, "title" => $title, "description" => $description);			
 		}
 		sort($files);
 
